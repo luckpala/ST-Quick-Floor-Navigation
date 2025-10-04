@@ -1,68 +1,12 @@
-// SillyTavern 快速楼层导航插件 - 极简测试版
+// SillyTavern 快速楼层导航插件 - 直接显示完整功能
 console.log('🎯 ST-Quick-Floor-Navigation 插件开始加载...');
 
 // 立即执行，不等待任何条件
 console.log('🎯 插件代码立即执行...');
 
-// 创建简单的测试按钮
-function createTestButton() {
-    console.log('🎯 开始创建测试按钮...');
-    
-    // 移除现有按钮
-    var existing = document.getElementById('floor-nav-test');
-    if (existing) {
-        existing.remove();
-    }
-    
-    // 创建按钮
-    var button = document.createElement('div');
-    button.id = 'floor-nav-test';
-    button.style.position = 'fixed';
-    button.style.top = '50px';
-    button.style.right = '50px';
-    button.style.zIndex = '999999';
-    button.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-    button.style.color = 'white';
-    button.style.padding = '15px';
-    button.style.borderRadius = '10px';
-    button.style.cursor = 'pointer';
-    button.style.fontFamily = 'Arial, sans-serif';
-    button.style.fontSize = '14px';
-    button.style.fontWeight = 'bold';
-    button.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
-    button.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-    button.style.minWidth = '120px';
-    button.style.textAlign = 'center';
-    button.textContent = '🎯 楼层导航测试';
-    
-    button.addEventListener('click', function() {
-        alert('插件工作正常！\n\n功能包括：\n- 快速跳转到楼层\n- 上下移动\n- 楼层编号识别\n\n点击确定后开始创建完整功能...');
-        console.log('🎯 测试按钮被点击，开始创建完整功能...');
-        createFullNavigation();
-    });
-    
-    button.addEventListener('mouseenter', function() {
-        button.style.transform = 'scale(1.05)';
-        button.style.transition = 'all 0.2s ease';
-    });
-    
-    button.addEventListener('mouseleave', function() {
-        button.style.transform = 'scale(1)';
-    });
-    
-    document.body.appendChild(button);
-    console.log('🎯 测试按钮已创建');
-}
-
 // 创建完整的楼层导航功能
 function createFullNavigation() {
     console.log('🎯 开始创建完整楼层导航...');
-    
-    // 移除测试按钮
-    var testButton = document.getElementById('floor-nav-test');
-    if (testButton) {
-        testButton.remove();
-    }
     
     // 移除现有面板
     var existing = document.getElementById('floor-nav-panel');
@@ -90,6 +34,8 @@ function createFullNavigation() {
     panel.style.gap = '8px';
     panel.style.minWidth = '120px';
     panel.style.backdropFilter = 'blur(10px)';
+    panel.style.cursor = 'move';
+    panel.style.userSelect = 'none';
     
     // 创建标题
     var title = document.createElement('div');
@@ -190,16 +136,28 @@ function createFullNavigation() {
             action: function() { 
                 console.log('🎯 点击下移按钮');
                 var messages = getMessages();
+                if (messages.length === 0) {
+                    console.log('🎯 没有找到消息元素');
+                    return;
+                }
+                
                 var currentFloor = 0;
+                var viewportCenter = window.innerHeight / 2;
+                
+                // 找到当前最接近视窗中心的楼层
                 for (var i = 0; i < messages.length; i++) {
                     var rect = messages[i].getBoundingClientRect();
-                    if (rect.top >= 0 && rect.top <= window.innerHeight / 2) {
+                    if (rect.top >= 0 && rect.top <= viewportCenter) {
                         currentFloor = i;
-                        break;
                     }
                 }
+                
+                console.log('🎯 当前楼层: ' + currentFloor + '/' + messages.length);
+                
                 if (currentFloor < messages.length - 1) {
-                    jumpToFloor(currentFloor + 1);
+                    var targetFloor = currentFloor + 1;
+                    console.log('🎯 跳转到楼层: ' + targetFloor);
+                    jumpToFloor(targetFloor);
                 } else {
                     console.log('🎯 已经在最后一层');
                 }
@@ -237,6 +195,24 @@ function createFullNavigation() {
         }
     ];
     
+    // 添加防抖功能
+    var buttonCooldowns = {};
+    
+    function addButtonWithCooldown(button, action, cooldownMs) {
+        button.addEventListener('click', function() {
+            var now = Date.now();
+            var lastClick = buttonCooldowns[button.textContent] || 0;
+            
+            if (now - lastClick < cooldownMs) {
+                console.log('🎯 按钮冷却中，忽略点击');
+                return;
+            }
+            
+            buttonCooldowns[button.textContent] = now;
+            action();
+        });
+    }
+    
     // 添加按钮
     for (var b = 0; b < buttons.length; b++) {
         var button = document.createElement('button');
@@ -251,7 +227,11 @@ function createFullNavigation() {
         button.style.fontWeight = '500';
         button.style.transition = 'all 0.2s ease';
         button.style.minWidth = '80px';
-        button.addEventListener('click', buttons[b].action);
+        
+        // 为下移按钮添加更长的冷却时间
+        var cooldownTime = button.textContent === '⬇ 下移' ? 300 : 100;
+        addButtonWithCooldown(button, buttons[b].action, cooldownTime);
+        
         panel.appendChild(button);
     }
     
@@ -292,13 +272,99 @@ function createFullNavigation() {
         scrollTimeout = setTimeout(updateFloorInfo, 100);
     });
     
+    // 添加拖拽功能
+    var isDragging = false;
+    var dragOffset = { x: 0, y: 0 };
+    
+    // 鼠标按下事件
+    panel.addEventListener('mousedown', function(e) {
+        // 如果点击的是按钮，不启动拖拽
+        if (e.target.tagName === 'BUTTON') {
+            return;
+        }
+        
+        isDragging = true;
+        panel.style.cursor = 'grabbing';
+        panel.style.opacity = '0.8';
+        
+        // 计算鼠标相对于面板的偏移
+        var rect = panel.getBoundingClientRect();
+        dragOffset.x = e.clientX - rect.left;
+        dragOffset.y = e.clientY - rect.top;
+        
+        // 阻止默认行为
+        e.preventDefault();
+    });
+    
+    // 鼠标移动事件
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        
+        // 计算新位置
+        var newX = e.clientX - dragOffset.x;
+        var newY = e.clientY - dragOffset.y;
+        
+        // 限制在视窗范围内
+        var maxX = window.innerWidth - panel.offsetWidth;
+        var maxY = window.innerHeight - panel.offsetHeight;
+        
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
+        
+        // 更新位置
+        panel.style.left = newX + 'px';
+        panel.style.top = newY + 'px';
+        panel.style.right = 'auto';
+        panel.style.bottom = 'auto';
+    });
+    
+    // 鼠标释放事件
+    document.addEventListener('mouseup', function() {
+        if (isDragging) {
+            isDragging = false;
+            panel.style.cursor = 'move';
+            panel.style.opacity = '1';
+            
+            // 保存位置到本地存储
+            localStorage.setItem('floor-nav-position', JSON.stringify({
+                left: panel.style.left,
+                top: panel.style.top
+            }));
+        }
+    });
+    
+    // 从本地存储恢复位置
+    var savedPosition = localStorage.getItem('floor-nav-position');
+    if (savedPosition) {
+        try {
+            var position = JSON.parse(savedPosition);
+            if (position.left && position.top) {
+                panel.style.left = position.left;
+                panel.style.top = position.top;
+                panel.style.right = 'auto';
+                panel.style.bottom = 'auto';
+            }
+        } catch (e) {
+            console.log('🎯 无法恢复保存的位置');
+        }
+    }
+    
+    // 添加拖拽提示
+    var dragHint = document.createElement('div');
+    dragHint.textContent = '💡 拖拽移动';
+    dragHint.style.fontSize = '10px';
+    dragHint.style.opacity = '0.7';
+    dragHint.style.textAlign = 'center';
+    dragHint.style.marginTop = '5px';
+    panel.appendChild(dragHint);
+    
     // 添加到页面
     document.body.appendChild(panel);
     
     // 初始更新
     setTimeout(updateFloorInfo, 500);
     
-    console.log('🎯 楼层导航面板已创建');
+    console.log('🎯 楼层导航面板已创建（支持拖拽移动）');
     
     // 返回控制对象
     window.QuickFloorFixed = {
@@ -333,11 +399,11 @@ function createFullNavigation() {
     return panel;
 }
 
-// 立即创建测试按钮
-createTestButton();
+// 直接创建完整的楼层导航功能
+createFullNavigation();
 
 // 延迟创建（以防页面还没完全加载）
-setTimeout(createTestButton, 1000);
-setTimeout(createTestButton, 3000);
+setTimeout(createFullNavigation, 1000);
+setTimeout(createFullNavigation, 3000);
 
 console.log('🎯 ST-Quick-Floor-Navigation 插件加载完成');

@@ -51,3 +51,13 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+
+# SillyTavern 测试目录
+public/
+
+# 调试和测试文件
+console-test.js
+debug.js
+fixed-plugin.js
+sillytavern-plugin.js
+DEBUG_GUIDE.md
