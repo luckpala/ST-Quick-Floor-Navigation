@@ -1,8 +1,11 @@
 // SillyTavern扩展插件 - 快速楼层导航
+console.log('🔧 ST-Quick-Floor-Navigation 插件开始加载...');
+
+// 立即执行，不等待任何条件
 (function() {
     'use strict';
     
-    console.log('🔧 ST-Quick-Floor-Navigation 插件启动中...');
+    console.log('🔧 插件代码开始执行...');
     
     // 插件配置
     var pluginConfig = {
@@ -11,25 +14,9 @@
         author: 'qb'
     };
     
-    // 等待页面加载完成
-    function waitForPageLoad() {
-        console.log('等待页面加载，当前状态:', document.readyState);
-        
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-                console.log('DOM加载完成，延迟初始化插件...');
-                setTimeout(initPlugin, 2000);
-            });
-        } else {
-            console.log('页面已加载，延迟初始化插件...');
-            // 延迟更长时间确保SillyTavern完全初始化
-            setTimeout(initPlugin, 3000);
-        }
-    }
-    
-    // 初始化插件
-    function initPlugin() {
-        console.log('初始化楼层导航插件...');
+    // 创建按钮的函数
+    function createButtons() {
+        console.log('开始创建楼层导航按钮...');
         
         // 移除现有按钮
         var existing = document.getElementById('quick-floor-nav-fixed');
@@ -37,46 +24,6 @@
             existing.remove();
             console.log('移除现有按钮');
         }
-        
-        // 创建按钮
-        createButtons();
-        
-        // 监听页面变化（SillyTavern的聊天页面切换）
-        var observer = new MutationObserver(function(mutations) {
-            var shouldRecreate = false;
-            mutations.forEach(function(mutation) {
-                if (mutation.type === 'childList') {
-                    // 检查是否有新的聊天内容
-                    for (var i = 0; i < mutation.addedNodes.length; i++) {
-                        var node = mutation.addedNodes[i];
-                        if (node.nodeType === 1 && (node.classList.contains('mes') || node.querySelector('.mes'))) {
-                            shouldRecreate = true;
-                            break;
-                        }
-                    }
-                }
-            });
-            
-            if (shouldRecreate) {
-                setTimeout(function() {
-                    var current = document.getElementById('quick-floor-nav-fixed');
-                    if (!current) {
-                        createButtons();
-                    }
-                }, 500);
-            }
-        });
-        
-        // 开始观察
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    }
-    
-    // 创建按钮
-    function createButtons() {
-        console.log('创建楼层导航按钮...');
         
         // 创建容器
         var container = document.createElement('div');
@@ -437,7 +384,28 @@
         return container;
     }
     
-    // 启动插件
-    waitForPageLoad();
+    // 立即尝试创建按钮
+    console.log('立即尝试创建按钮...');
+    createButtons();
+    
+    // 延迟再次尝试（以防页面还没完全加载）
+    setTimeout(function() {
+        console.log('延迟创建按钮...');
+        var existing = document.getElementById('quick-floor-nav-fixed');
+        if (!existing) {
+            createButtons();
+        }
+    }, 2000);
+    
+    // 再延迟一次
+    setTimeout(function() {
+        console.log('第二次延迟创建按钮...');
+        var existing = document.getElementById('quick-floor-nav-fixed');
+        if (!existing) {
+            createButtons();
+        }
+    }, 5000);
     
 })();
+
+console.log('🔧 ST-Quick-Floor-Navigation 插件加载完成');
