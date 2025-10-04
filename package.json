@@ -1,0 +1,27 @@
+{
+  "name": "st-quick-floor-navigation",
+  "version": "1.0.0",
+  "description": "A quick floor navigation plugin for SillyTavern",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "sillytavern",
+    "plugin",
+    "navigation",
+    "chat",
+    "floor-navigation",
+    "quick-jump"
+  ],
+  "author": "qb",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qb/ST-Quick-Floor-Navigation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/qb/ST-Quick-Floor-Navigation/issues"
+  },
+  "homepage": "https://github.com/qb/ST-Quick-Floor-Navigation#readme"
+}

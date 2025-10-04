@@ -1,0 +1,46 @@
+{
+    "name": "ST-Quick-Floor-Navigation",
+    "version": "1.0.0",
+    "description": "在对话时快速定位上下楼层的按键插件",
+    "author": "qb",
+    "license": "MIT",
+    "homepage": "https://github.com/qb/ST-Quick-Floor-Navigation",
+    "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/qb"
+    },
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/qb/ST-Quick-Floor-Navigation.git"
+    },
+    "bugs": {
+        "url": "https://github.com/qb/ST-Quick-Floor-Navigation/issues"
+    },
+    "keywords": [
+        "sillytavern",
+        "plugin",
+        "navigation",
+        "chat",
+        "楼层定位",
+        "floor navigation",
+        "quick jump"
+    ],
+    "sillytavern": {
+        "displayName": "快速定位楼层按键",
+        "minVersion": "1.8.0",
+        "maxVersion": "*",
+        "author": "qb",
+        "description": "在对话时快速定位上下楼层的按键插件，支持键盘快捷键和UI按钮。可以快速跳转到指定楼层，支持#编号识别。",
+        "icon": "🎯",
+        "tags": [
+            "ui",
+            "navigation",
+            "chat",
+            "accessibility"
+        ],
+        "sources": [
+            "https://github.com/qb/ST-Quick-Floor-Navigation"
+        ]
+    }
+}
