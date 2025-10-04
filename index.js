@@ -32,19 +32,119 @@ function createFullNavigation() {
     panel.style.display = 'flex';
     panel.style.flexDirection = 'column';
     panel.style.gap = '8px';
-    panel.style.minWidth = '120px';
+    panel.style.minWidth = '60px';
     panel.style.backdropFilter = 'blur(10px)';
     panel.style.cursor = 'move';
     panel.style.userSelect = 'none';
     
-    // 创建标题
+    // 创建标题栏（包含收缩按钮）
+    var titleBar = document.createElement('div');
+    titleBar.style.display = 'flex';
+    titleBar.style.justifyContent = 'space-between';
+    titleBar.style.alignItems = 'center';
+    titleBar.style.marginBottom = '5px';
+    
     var title = document.createElement('div');
     title.textContent = '🎯 楼层导航';
-    title.style.textAlign = 'center';
     title.style.fontWeight = 'bold';
-    title.style.marginBottom = '5px';
     title.style.fontSize = '12px';
-    panel.appendChild(title);
+    title.style.flex = '1';
+    title.style.textAlign = 'center';
+    
+    var collapseBtn = document.createElement('button');
+    collapseBtn.textContent = '−';
+    collapseBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+    collapseBtn.style.border = 'none';
+    collapseBtn.style.color = 'white';
+    collapseBtn.style.width = '20px';
+    collapseBtn.style.height = '20px';
+    collapseBtn.style.borderRadius = '3px';
+    collapseBtn.style.fontSize = '12px';
+    collapseBtn.style.cursor = 'pointer';
+    collapseBtn.style.marginLeft = '5px';
+    
+    var autoHideBtn = document.createElement('button');
+    autoHideBtn.textContent = '⏰';
+    autoHideBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+    autoHideBtn.style.border = 'none';
+    autoHideBtn.style.color = 'white';
+    autoHideBtn.style.width = '20px';
+    autoHideBtn.style.height = '20px';
+    autoHideBtn.style.borderRadius = '3px';
+    autoHideBtn.style.fontSize = '10px';
+    autoHideBtn.style.cursor = 'pointer';
+    autoHideBtn.style.marginLeft = '3px';
+    autoHideBtn.title = '自动隐藏开关';
+    
+    titleBar.appendChild(title);
+    titleBar.appendChild(collapseBtn);
+    titleBar.appendChild(autoHideBtn);
+    panel.appendChild(titleBar);
+    
+    // 收缩状态
+    var isCollapsed = false;
+    var originalHeight = '';
+    var originalGap = '';
+    
+    // 收缩/展开功能
+    function toggleCollapse() {
+        if (isCollapsed) {
+            // 展开
+            panel.style.height = originalHeight;
+            panel.style.gap = originalGap;
+            title.textContent = '🎯 楼层导航';
+            collapseBtn.textContent = '−';
+            
+            // 显示所有按钮
+            for (var i = 0; i < panel.children.length; i++) {
+                var child = panel.children[i];
+                if (child.tagName === 'BUTTON' || child.id === 'floor-info' || child.textContent === '💡 拖拽移动') {
+                    child.style.display = 'block';
+                }
+            }
+            isCollapsed = false;
+        } else {
+            // 收缩
+            originalHeight = panel.style.height;
+            originalGap = panel.style.gap;
+            
+            panel.style.height = 'auto';
+            panel.style.gap = '0px';
+            title.textContent = '🎯';
+            collapseBtn.textContent = '+';
+            
+            // 隐藏所有按钮
+            for (var i = 0; i < panel.children.length; i++) {
+                var child = panel.children[i];
+                if (child.tagName === 'BUTTON' || child.id === 'floor-info' || child.textContent === '💡 拖拽移动') {
+                    child.style.display = 'none';
+                }
+            }
+            isCollapsed = true;
+        }
+    }
+    
+    collapseBtn.addEventListener('click', function(e) {
+        e.stopPropagation(); // 阻止事件冒泡，避免触发拖拽
+        toggleCollapse();
+    });
+    
+    autoHideBtn.addEventListener('click', function(e) {
+        e.stopPropagation(); // 阻止事件冒泡，避免触发拖拽
+        isAutoHideEnabled = !isAutoHideEnabled;
+        
+        if (isAutoHideEnabled) {
+            autoHideBtn.textContent = '⏰';
+            autoHideBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+            showPanel(); // 重新启动自动隐藏
+        } else {
+            autoHideBtn.textContent = '⏰';
+            autoHideBtn.style.background = 'rgba(255, 100, 100, 0.4)';
+            clearTimeout(hideTimeout); // 停止自动隐藏
+            panel.style.opacity = '1';
+            panel.style.transform = 'scale(1)';
+        }
+    });
     
     // 获取消息元素
     function getMessages() {
@@ -105,16 +205,16 @@ function createFullNavigation() {
     // 创建按钮
     var buttons = [
         { 
-            text: '⬆️ 顶部', 
+            text: '顶层', 
             action: function() { 
-                console.log('🎯 点击顶部按钮');
+                console.log('🎯 点击顶层按钮');
                 jumpToFloor(0); 
             } 
         },
         { 
-            text: '⬆ 上移', 
+            text: '上一层', 
             action: function() { 
-                console.log('🎯 点击上移按钮');
+                console.log('🎯 点击上一层按钮');
                 var messages = getMessages();
                 if (messages.length === 0) {
                     console.log('🎯 没有找到消息元素');
@@ -167,9 +267,9 @@ function createFullNavigation() {
             } 
         },
         { 
-            text: '⬇ 下移', 
+            text: '下一层', 
             action: function() { 
-                console.log('🎯 点击下移按钮');
+                console.log('🎯 点击下一层按钮');
                 var messages = getMessages();
                 if (messages.length === 0) {
                     console.log('🎯 没有找到消息元素');
@@ -222,9 +322,9 @@ function createFullNavigation() {
             } 
         },
         { 
-            text: '⬇️ 底部', 
+            text: '底层', 
             action: function() { 
-                console.log('🎯 点击底部按钮');
+                console.log('🎯 点击底层按钮');
                 var messages = getMessages();
                 if (messages.length > 0) {
                     jumpToFloor(messages.length - 1);
@@ -337,15 +437,68 @@ function createFullNavigation() {
         var totalFloors = messages.length;
         var currentFloor = 0;
         
+        // 使用与按钮相同的检测逻辑
+        var viewportTop = 100;
+        
+        // 找到当前最接近视窗顶部的楼层
         for (var i = 0; i < messages.length; i++) {
             var rect = messages[i].getBoundingClientRect();
-            if (rect.top >= 0 && rect.top <= window.innerHeight / 2) {
+            if (rect.top <= viewportTop && rect.bottom > viewportTop) {
                 currentFloor = i;
                 break;
             }
         }
         
-        floorInfo.textContent = '楼层: ' + currentFloor + '/' + totalFloors;
+        // 如果没有找到合适的楼层，检查是否在底部
+        if (currentFloor === 0) {
+            // 检查最后一个消息是否在视窗底部附近
+            var lastMessage = messages[messages.length - 1];
+            var lastRect = lastMessage.getBoundingClientRect();
+            
+            if (lastRect.bottom <= window.innerHeight + 50) {
+                // 如果在底部，当前楼层就是最后一层
+                currentFloor = messages.length - 1;
+            } else {
+                // 否则使用第一个可见的楼层
+                for (var i = 0; i < messages.length; i++) {
+                    var rect = messages[i].getBoundingClientRect();
+                    if (rect.top >= 0 && rect.top <= window.innerHeight) {
+                        currentFloor = i;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        floorInfo.textContent = '# ' + currentFloor + ' / ' + totalFloors;
+    }
+    
+    // 自动隐藏功能
+    var hideTimeout;
+    var isAutoHideEnabled = true;
+    
+    function showPanel() {
+        panel.style.opacity = '1';
+        panel.style.transform = 'scale(1)';
+        
+        if (isAutoHideEnabled) {
+            // 清除之前的隐藏定时器
+            clearTimeout(hideTimeout);
+            // 5秒后自动隐藏
+            hideTimeout = setTimeout(function() {
+                if (!isCollapsed) {
+                    panel.style.opacity = '0.3';
+                    panel.style.transform = 'scale(0.95)';
+                }
+            }, 5000);
+        }
+    }
+    
+    function hidePanel() {
+        if (!isCollapsed) {
+            panel.style.opacity = '0.3';
+            panel.style.transform = 'scale(0.95)';
+        }
     }
     
     // 监听滚动
@@ -353,6 +506,19 @@ function createFullNavigation() {
     window.addEventListener('scroll', function() {
         clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(updateFloorInfo, 100);
+        
+        // 滚动时显示面板
+        showPanel();
+    });
+    
+    // 鼠标悬停时显示面板
+    panel.addEventListener('mouseenter', function() {
+        showPanel();
+    });
+    
+    // 触摸开始时显示面板
+    panel.addEventListener('touchstart', function() {
+        showPanel();
     });
     
     // 添加拖拽功能（支持鼠标和触摸）
