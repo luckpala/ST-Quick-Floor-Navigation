@@ -278,13 +278,15 @@ function createFullNavigation() {
         button.style.background = 'rgba(255, 255, 255, 0.2)';
         button.style.border = 'none';
         button.style.color = 'white';
-        button.style.padding = '8px 12px';
-        button.style.borderRadius = '6px';
+        button.style.padding = '10px 14px';
+        button.style.borderRadius = '8px';
         button.style.cursor = 'pointer';
-        button.style.fontSize = '12px';
+        button.style.fontSize = '13px';
         button.style.fontWeight = '500';
         button.style.transition = 'all 0.2s ease';
-        button.style.minWidth = '80px';
+        button.style.minWidth = '85px';
+        button.style.minHeight = '36px';
+        button.style.touchAction = 'manipulation'; // 优化触摸响应
         
         // 添加鼠标悬停效果
         button.addEventListener('mouseenter', function() {
@@ -353,14 +355,14 @@ function createFullNavigation() {
         scrollTimeout = setTimeout(updateFloorInfo, 100);
     });
     
-    // 添加拖拽功能
+    // 添加拖拽功能（支持鼠标和触摸）
     var isDragging = false;
     var dragOffset = { x: 0, y: 0 };
     
-    // 鼠标按下事件
-    panel.addEventListener('mousedown', function(e) {
+    // 开始拖拽的通用函数
+    function startDrag(clientX, clientY) {
         // 如果点击的是按钮，不启动拖拽
-        if (e.target.tagName === 'BUTTON') {
+        if (event.target.tagName === 'BUTTON') {
             return;
         }
         
@@ -368,22 +370,22 @@ function createFullNavigation() {
         panel.style.cursor = 'grabbing';
         panel.style.opacity = '0.8';
         
-        // 计算鼠标相对于面板的偏移
+        // 计算触摸/鼠标相对于面板的偏移
         var rect = panel.getBoundingClientRect();
-        dragOffset.x = e.clientX - rect.left;
-        dragOffset.y = e.clientY - rect.top;
+        dragOffset.x = clientX - rect.left;
+        dragOffset.y = clientY - rect.top;
         
         // 阻止默认行为
-        e.preventDefault();
-    });
+        event.preventDefault();
+    }
     
-    // 鼠标移动事件
-    document.addEventListener('mousemove', function(e) {
+    // 拖拽移动的通用函数
+    function dragMove(clientX, clientY) {
         if (!isDragging) return;
         
         // 计算新位置
-        var newX = e.clientX - dragOffset.x;
-        var newY = e.clientY - dragOffset.y;
+        var newX = clientX - dragOffset.x;
+        var newY = clientY - dragOffset.y;
         
         // 限制在视窗范围内
         var maxX = window.innerWidth - panel.offsetWidth;
@@ -397,10 +399,10 @@ function createFullNavigation() {
         panel.style.top = newY + 'px';
         panel.style.right = 'auto';
         panel.style.bottom = 'auto';
-    });
+    }
     
-    // 鼠标释放事件
-    document.addEventListener('mouseup', function() {
+    // 结束拖拽的通用函数
+    function endDrag() {
         if (isDragging) {
             isDragging = false;
             panel.style.cursor = 'move';
@@ -411,6 +413,46 @@ function createFullNavigation() {
                 left: panel.style.left,
                 top: panel.style.top
             }));
+        }
+    }
+    
+    // 鼠标事件
+    panel.addEventListener('mousedown', function(e) {
+        startDrag(e.clientX, e.clientY);
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+        dragMove(e.clientX, e.clientY);
+    });
+    
+    document.addEventListener('mouseup', function() {
+        endDrag();
+    });
+    
+    // 触摸事件（手机端支持）
+    panel.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 1) {
+            var touch = e.touches[0];
+            startDrag(touch.clientX, touch.clientY);
+        }
+    }, { passive: false });
+    
+    document.addEventListener('touchmove', function(e) {
+        if (e.touches.length === 1 && isDragging) {
+            var touch = e.touches[0];
+            dragMove(touch.clientX, touch.clientY);
+            e.preventDefault(); // 阻止页面滚动
+        }
+    }, { passive: false });
+    
+    document.addEventListener('touchend', function() {
+        endDrag();
+    });
+    
+    // 防止触摸时意外触发点击事件
+    panel.addEventListener('touchend', function(e) {
+        if (isDragging) {
+            e.preventDefault();
         }
     });
     
