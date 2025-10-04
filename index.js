@@ -13,11 +13,17 @@
     
     // 等待页面加载完成
     function waitForPageLoad() {
+        console.log('等待页面加载，当前状态:', document.readyState);
+        
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initPlugin);
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('DOM加载完成，延迟初始化插件...');
+                setTimeout(initPlugin, 2000);
+            });
         } else {
-            // 延迟一点时间确保SillyTavern完全初始化
-            setTimeout(initPlugin, 1000);
+            console.log('页面已加载，延迟初始化插件...');
+            // 延迟更长时间确保SillyTavern完全初始化
+            setTimeout(initPlugin, 3000);
         }
     }
     
