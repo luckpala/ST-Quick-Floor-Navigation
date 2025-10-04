@@ -31,55 +31,28 @@ function createFullNavigation() {
     panel.style.border = '1px solid rgba(255, 255, 255, 0.1)';
     panel.style.display = 'flex';
     panel.style.flexDirection = 'column';
-    panel.style.gap = '8px';
-    panel.style.minWidth = '60px';
+    panel.style.gap = '12px';
+    panel.style.minWidth = '50px';
+    panel.style.width = '50px';
     panel.style.backdropFilter = 'blur(10px)';
     panel.style.cursor = 'move';
     panel.style.userSelect = 'none';
     
-    // 创建标题栏（包含收缩按钮）
-    var titleBar = document.createElement('div');
-    titleBar.style.display = 'flex';
-    titleBar.style.justifyContent = 'space-between';
-    titleBar.style.alignItems = 'center';
-    titleBar.style.marginBottom = '5px';
-    
-    var title = document.createElement('div');
-    title.textContent = '🎯 楼层导航';
-    title.style.fontWeight = 'bold';
-    title.style.fontSize = '12px';
-    title.style.flex = '1';
-    title.style.textAlign = 'center';
-    
+    // 创建收缩按钮（右上角）
     var collapseBtn = document.createElement('button');
     collapseBtn.textContent = '−';
+    collapseBtn.style.position = 'absolute';
+    collapseBtn.style.top = '5px';
+    collapseBtn.style.right = '5px';
     collapseBtn.style.background = 'rgba(255, 255, 255, 0.2)';
     collapseBtn.style.border = 'none';
     collapseBtn.style.color = 'white';
-    collapseBtn.style.width = '20px';
-    collapseBtn.style.height = '20px';
+    collapseBtn.style.width = '18px';
+    collapseBtn.style.height = '18px';
     collapseBtn.style.borderRadius = '3px';
     collapseBtn.style.fontSize = '12px';
     collapseBtn.style.cursor = 'pointer';
-    collapseBtn.style.marginLeft = '5px';
-    
-    var autoHideBtn = document.createElement('button');
-    autoHideBtn.textContent = '⏰';
-    autoHideBtn.style.background = 'rgba(255, 255, 255, 0.2)';
-    autoHideBtn.style.border = 'none';
-    autoHideBtn.style.color = 'white';
-    autoHideBtn.style.width = '20px';
-    autoHideBtn.style.height = '20px';
-    autoHideBtn.style.borderRadius = '3px';
-    autoHideBtn.style.fontSize = '10px';
-    autoHideBtn.style.cursor = 'pointer';
-    autoHideBtn.style.marginLeft = '3px';
-    autoHideBtn.title = '自动隐藏开关';
-    
-    titleBar.appendChild(title);
-    titleBar.appendChild(collapseBtn);
-    titleBar.appendChild(autoHideBtn);
-    panel.appendChild(titleBar);
+    collapseBtn.style.zIndex = '10';
     
     // 收缩状态
     var isCollapsed = false;
@@ -127,23 +100,6 @@ function createFullNavigation() {
     collapseBtn.addEventListener('click', function(e) {
         e.stopPropagation(); // 阻止事件冒泡，避免触发拖拽
         toggleCollapse();
-    });
-    
-    autoHideBtn.addEventListener('click', function(e) {
-        e.stopPropagation(); // 阻止事件冒泡，避免触发拖拽
-        isAutoHideEnabled = !isAutoHideEnabled;
-        
-        if (isAutoHideEnabled) {
-            autoHideBtn.textContent = '⏰';
-            autoHideBtn.style.background = 'rgba(255, 255, 255, 0.2)';
-            showPanel(); // 重新启动自动隐藏
-        } else {
-            autoHideBtn.textContent = '⏰';
-            autoHideBtn.style.background = 'rgba(255, 100, 100, 0.4)';
-            clearTimeout(hideTimeout); // 停止自动隐藏
-            panel.style.opacity = '1';
-            panel.style.transform = 'scale(1)';
-        }
     });
     
     // 获取消息元素
@@ -205,14 +161,14 @@ function createFullNavigation() {
     // 创建按钮
     var buttons = [
         { 
-            text: '顶层', 
+            text: '⬆️', 
             action: function() { 
                 console.log('🎯 点击顶层按钮');
                 jumpToFloor(0); 
             } 
         },
         { 
-            text: '上一层', 
+            text: '▲', 
             action: function() { 
                 console.log('🎯 点击上一层按钮');
                 var messages = getMessages();
@@ -267,7 +223,7 @@ function createFullNavigation() {
             } 
         },
         { 
-            text: '下一层', 
+            text: '▼', 
             action: function() { 
                 console.log('🎯 点击下一层按钮');
                 var messages = getMessages();
@@ -322,7 +278,7 @@ function createFullNavigation() {
             } 
         },
         { 
-            text: '底层', 
+            text: '⬇️', 
             action: function() { 
                 console.log('🎯 点击底层按钮');
                 var messages = getMessages();
@@ -332,7 +288,7 @@ function createFullNavigation() {
             } 
         },
         { 
-            text: '🎯 跳转', 
+            text: '🎯', 
             action: function() { 
                 console.log('🎯 点击跳转按钮');
                 var messages = getMessages();
@@ -378,14 +334,14 @@ function createFullNavigation() {
         button.style.background = 'rgba(255, 255, 255, 0.2)';
         button.style.border = 'none';
         button.style.color = 'white';
-        button.style.padding = '10px 14px';
-        button.style.borderRadius = '8px';
+        button.style.padding = '8px 4px';
+        button.style.borderRadius = '6px';
         button.style.cursor = 'pointer';
-        button.style.fontSize = '13px';
-        button.style.fontWeight = '500';
+        button.style.fontSize = '16px';
+        button.style.fontWeight = 'normal';
         button.style.transition = 'all 0.2s ease';
-        button.style.minWidth = '85px';
-        button.style.minHeight = '36px';
+        button.style.width = '42px';
+        button.style.height = '32px';
         button.style.touchAction = 'manipulation'; // 优化触摸响应
         
         // 添加鼠标悬停效果
@@ -418,105 +374,44 @@ function createFullNavigation() {
         panel.appendChild(button);
     }
     
-    // 楼层信息显示
-    var floorInfo = document.createElement('div');
-    floorInfo.id = 'floor-info';
-    floorInfo.style.background = 'rgba(255, 255, 255, 0.1)';
-    floorInfo.style.color = 'white';
-    floorInfo.style.padding = '6px 8px';
-    floorInfo.style.borderRadius = '4px';
-    floorInfo.style.fontSize = '11px';
-    floorInfo.style.textAlign = 'center';
-    floorInfo.style.marginTop = '5px';
-    floorInfo.textContent = '楼层: 0/0';
-    panel.appendChild(floorInfo);
+    // 楼层信息显示（已移除）
     
-    // 更新楼层信息
-    function updateFloorInfo() {
-        var messages = getMessages();
-        var totalFloors = messages.length;
-        var currentFloor = 0;
-        
-        // 使用与按钮相同的检测逻辑
-        var viewportTop = 100;
-        
-        // 找到当前最接近视窗顶部的楼层
-        for (var i = 0; i < messages.length; i++) {
-            var rect = messages[i].getBoundingClientRect();
-            if (rect.top <= viewportTop && rect.bottom > viewportTop) {
-                currentFloor = i;
-                break;
-            }
-        }
-        
-        // 如果没有找到合适的楼层，检查是否在底部
-        if (currentFloor === 0) {
-            // 检查最后一个消息是否在视窗底部附近
-            var lastMessage = messages[messages.length - 1];
-            var lastRect = lastMessage.getBoundingClientRect();
-            
-            if (lastRect.bottom <= window.innerHeight + 50) {
-                // 如果在底部，当前楼层就是最后一层
-                currentFloor = messages.length - 1;
-            } else {
-                // 否则使用第一个可见的楼层
-                for (var i = 0; i < messages.length; i++) {
-                    var rect = messages[i].getBoundingClientRect();
-                    if (rect.top >= 0 && rect.top <= window.innerHeight) {
-                        currentFloor = i;
-                        break;
-                    }
-                }
-            }
-        }
-        
-        floorInfo.textContent = '# ' + currentFloor + ' / ' + totalFloors;
-    }
+    // 楼层信息更新函数（已移除）
     
-    // 自动隐藏功能
-    var hideTimeout;
-    var isAutoHideEnabled = true;
+    // 滚动显示功能
+    var scrollTimeout;
+    var isScrolling = false;
     
     function showPanel() {
         panel.style.opacity = '1';
         panel.style.transform = 'scale(1)';
-        
-        if (isAutoHideEnabled) {
-            // 清除之前的隐藏定时器
-            clearTimeout(hideTimeout);
-            // 5秒后自动隐藏
-            hideTimeout = setTimeout(function() {
-                if (!isCollapsed) {
-                    panel.style.opacity = '0.3';
-                    panel.style.transform = 'scale(0.95)';
-                }
-            }, 5000);
-        }
     }
     
     function hidePanel() {
-        if (!isCollapsed) {
+        if (!isCollapsed && !isDragging) {
             panel.style.opacity = '0.3';
             panel.style.transform = 'scale(0.95)';
         }
     }
     
     // 监听滚动
-    var scrollTimeout;
     window.addEventListener('scroll', function() {
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(updateFloorInfo, 100);
-        
         // 滚动时显示面板
         showPanel();
+        isScrolling = true;
+        
+        // 滚动停止1秒后隐藏面板
+        setTimeout(function() {
+            isScrolling = false;
+            hidePanel();
+        }, 1000);
     });
     
-    // 鼠标悬停时显示面板
+    // 面板交互时显示
     panel.addEventListener('mouseenter', function() {
         showPanel();
     });
     
-    // 触摸开始时显示面板
     panel.addEventListener('touchstart', function() {
         showPanel();
     });
@@ -638,20 +533,13 @@ function createFullNavigation() {
         }
     }
     
-    // 添加拖拽提示
-    var dragHint = document.createElement('div');
-    dragHint.textContent = '💡 拖拽移动';
-    dragHint.style.fontSize = '10px';
-    dragHint.style.opacity = '0.7';
-    dragHint.style.textAlign = 'center';
-    dragHint.style.marginTop = '5px';
-    panel.appendChild(dragHint);
+    // 拖拽提示（已移除）
+    
+    // 添加收缩按钮到面板
+    panel.appendChild(collapseBtn);
     
     // 添加到页面
     document.body.appendChild(panel);
-    
-    // 初始更新
-    setTimeout(updateFloorInfo, 500);
     
     console.log('🎯 楼层导航面板已创建（支持拖拽移动）');
     
