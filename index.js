@@ -122,13 +122,36 @@ function createFullNavigation() {
                 }
                 
                 var currentFloor = 0;
-                var viewportCenter = window.innerHeight / 2;
+                var viewportTop = 100;
                 
-                // 找到当前最接近视窗中心的楼层
+                // 找到当前最接近视窗顶部的楼层
                 for (var i = 0; i < messages.length; i++) {
                     var rect = messages[i].getBoundingClientRect();
-                    if (rect.top >= 0 && rect.top <= viewportCenter) {
+                    if (rect.top <= viewportTop && rect.bottom > viewportTop) {
                         currentFloor = i;
+                        break;
+                    }
+                }
+                
+                // 如果没有找到合适的楼层，检查是否在底部
+                if (currentFloor === 0) {
+                    // 检查最后一个消息是否在视窗底部附近
+                    var lastMessage = messages[messages.length - 1];
+                    var lastRect = lastMessage.getBoundingClientRect();
+                    
+                    if (lastRect.bottom <= window.innerHeight + 50) {
+                        // 如果在底部，当前楼层就是最后一层
+                        currentFloor = messages.length - 1;
+                        console.log('🎯 检测到在底部，当前楼层: ' + currentFloor);
+                    } else {
+                        // 否则使用第一个可见的楼层
+                        for (var i = 0; i < messages.length; i++) {
+                            var rect = messages[i].getBoundingClientRect();
+                            if (rect.top >= 0 && rect.top <= window.innerHeight) {
+                                currentFloor = i;
+                                break;
+                            }
+                        }
                     }
                 }
                 
@@ -154,13 +177,36 @@ function createFullNavigation() {
                 }
                 
                 var currentFloor = 0;
-                var viewportCenter = window.innerHeight / 2;
+                var viewportTop = 100;
                 
-                // 找到当前最接近视窗中心的楼层
+                // 找到当前最接近视窗顶部的楼层
                 for (var i = 0; i < messages.length; i++) {
                     var rect = messages[i].getBoundingClientRect();
-                    if (rect.top >= 0 && rect.top <= viewportCenter) {
+                    if (rect.top <= viewportTop && rect.bottom > viewportTop) {
                         currentFloor = i;
+                        break;
+                    }
+                }
+                
+                // 如果没有找到合适的楼层，检查是否在底部
+                if (currentFloor === 0) {
+                    // 检查最后一个消息是否在视窗底部附近
+                    var lastMessage = messages[messages.length - 1];
+                    var lastRect = lastMessage.getBoundingClientRect();
+                    
+                    if (lastRect.bottom <= window.innerHeight + 50) {
+                        // 如果在底部，当前楼层就是最后一层
+                        currentFloor = messages.length - 1;
+                        console.log('🎯 检测到在底部，当前楼层: ' + currentFloor);
+                    } else {
+                        // 否则使用第一个可见的楼层
+                        for (var i = 0; i < messages.length; i++) {
+                            var rect = messages[i].getBoundingClientRect();
+                            if (rect.top >= 0 && rect.top <= window.innerHeight) {
+                                currentFloor = i;
+                                break;
+                            }
+                        }
                     }
                 }
                 

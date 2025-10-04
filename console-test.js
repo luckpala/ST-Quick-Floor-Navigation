@@ -230,7 +230,7 @@ function createFullNavigation() {
                     var targetFloor = parseInt(floorNumber);
                     if (!isNaN(targetFloor) && targetFloor >= 0 && targetFloor < messages.length) {
                         jumpToFloor(targetFloor);
-                    } else {
+                } else {
                         alert('无效的楼层号，请输入 0-' + (messages.length - 1) + ' 之间的数字');
                     }
                 }
