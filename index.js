@@ -116,16 +116,28 @@ function createFullNavigation() {
             action: function() { 
                 console.log('🎯 点击上移按钮');
                 var messages = getMessages();
+                if (messages.length === 0) {
+                    console.log('🎯 没有找到消息元素');
+                    return;
+                }
+                
                 var currentFloor = 0;
+                var viewportCenter = window.innerHeight / 2;
+                
+                // 找到当前最接近视窗中心的楼层
                 for (var i = 0; i < messages.length; i++) {
                     var rect = messages[i].getBoundingClientRect();
-                    if (rect.top >= 0 && rect.top <= window.innerHeight / 2) {
+                    if (rect.top >= 0 && rect.top <= viewportCenter) {
                         currentFloor = i;
-                        break;
                     }
                 }
+                
+                console.log('🎯 当前楼层: ' + currentFloor + '/' + messages.length);
+                
                 if (currentFloor > 0) {
-                    jumpToFloor(currentFloor - 1);
+                    var targetFloor = currentFloor - 1;
+                    console.log('🎯 跳转到楼层: ' + targetFloor);
+                    jumpToFloor(targetFloor);
                 } else {
                     console.log('🎯 已经在第一层');
                 }
@@ -228,9 +240,32 @@ function createFullNavigation() {
         button.style.transition = 'all 0.2s ease';
         button.style.minWidth = '80px';
         
-        // 为下移按钮添加更长的冷却时间
-        var cooldownTime = button.textContent === '⬇ 下移' ? 300 : 100;
-        addButtonWithCooldown(button, buttons[b].action, cooldownTime);
+        // 添加鼠标悬停效果
+        button.addEventListener('mouseenter', function() {
+            this.style.background = 'rgba(255, 255, 255, 0.4)';
+            this.style.transform = 'scale(1.05)';
+            this.style.boxShadow = '0 2px 8px rgba(255, 255, 255, 0.3)';
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            this.style.background = 'rgba(255, 255, 255, 0.2)';
+            this.style.transform = 'scale(1)';
+            this.style.boxShadow = 'none';
+        });
+        
+        // 添加点击效果
+        button.addEventListener('mousedown', function() {
+            this.style.background = 'rgba(255, 255, 255, 0.6)';
+            this.style.transform = 'scale(0.95)';
+        });
+        
+        button.addEventListener('mouseup', function() {
+            this.style.background = 'rgba(255, 255, 255, 0.4)';
+            this.style.transform = 'scale(1.05)';
+        });
+        
+        // 为所有按钮添加相同的冷却时间
+        addButtonWithCooldown(button, buttons[b].action, 200);
         
         panel.appendChild(button);
     }
