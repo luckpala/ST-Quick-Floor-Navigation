@@ -31,7 +31,9 @@ function createFullNavigation() {
     panel.style.border = '1px solid rgba(255, 255, 255, 0.1)';
     panel.style.display = 'flex';
     panel.style.flexDirection = 'column';
-    panel.style.gap = '12px';
+    panel.style.alignItems = 'center';
+    panel.style.padding = '25px 5px';
+    panel.style.gap = '10px';
     panel.style.minWidth = '50px';
     panel.style.width = '50px';
     panel.style.backdropFilter = 'blur(10px)';
@@ -41,18 +43,16 @@ function createFullNavigation() {
     // 创建收缩按钮（右上角）
     var collapseBtn = document.createElement('button');
     collapseBtn.textContent = '−';
-    collapseBtn.style.position = 'absolute';
-    collapseBtn.style.top = '5px';
-    collapseBtn.style.right = '5px';
+    collapseBtn.style.position = 'relative';
     collapseBtn.style.background = 'rgba(255, 255, 255, 0.2)';
     collapseBtn.style.border = 'none';
     collapseBtn.style.color = 'white';
-    collapseBtn.style.width = '18px';
-    collapseBtn.style.height = '18px';
-    collapseBtn.style.borderRadius = '3px';
+    collapseBtn.style.width = '42px';
+    collapseBtn.style.height = '20px';
+    collapseBtn.style.borderRadius = '6px';
     collapseBtn.style.fontSize = '12px';
     collapseBtn.style.cursor = 'pointer';
-    collapseBtn.style.zIndex = '10';
+    collapseBtn.style.marginBottom = '5px';
     
     // 收缩状态
     var isCollapsed = false;
@@ -327,7 +327,10 @@ function createFullNavigation() {
         });
     }
     
-    // 添加按钮
+    // 先添加收缩按钮到面板顶部
+    panel.appendChild(collapseBtn);
+    
+    // 添加导航按钮
     for (var b = 0; b < buttons.length; b++) {
         var button = document.createElement('button');
         button.textContent = buttons[b].text;
@@ -535,8 +538,40 @@ function createFullNavigation() {
     
     // 拖拽提示（已移除）
     
-    // 添加收缩按钮到面板
-    panel.appendChild(collapseBtn);
+    // 收缩功能
+    collapseBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        isCollapsed = !isCollapsed;
+        
+        // 显示/隐藏所有按钮
+        var allButtons = panel.querySelectorAll('button');
+        for (var j = 0; j < allButtons.length; j++) {
+            if (allButtons[j] !== collapseBtn) {
+                allButtons[j].style.display = isCollapsed ? 'none' : 'block';
+            }
+        }
+        
+        // 更新收缩按钮图标和样式
+        if (isCollapsed) {
+            collapseBtn.textContent = '+';
+            collapseBtn.style.width = '42px';
+            collapseBtn.style.height = '40px';
+            collapseBtn.style.fontSize = '16px';
+            collapseBtn.style.marginBottom = '0';
+            panel.style.width = '50px';
+            panel.style.height = '50px';
+            panel.style.padding = '5px';
+        } else {
+            collapseBtn.textContent = '−';
+            collapseBtn.style.width = '42px';
+            collapseBtn.style.height = '20px';
+            collapseBtn.style.fontSize = '12px';
+            collapseBtn.style.marginBottom = '5px';
+            panel.style.width = '50px';
+            panel.style.height = 'auto';
+            panel.style.padding = '25px 5px';
+        }
+    });
     
     // 添加到页面
     document.body.appendChild(panel);
