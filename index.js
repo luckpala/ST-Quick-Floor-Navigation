@@ -1,19 +1,76 @@
-// 简化版本 - 修复按键问题
+// SillyTavern扩展插件 - 快速楼层导航
 (function() {
     'use strict';
     
-    console.log('🔧 简化版本插件启动中...');
+    console.log('🔧 ST-Quick-Floor-Navigation 插件启动中...');
     
-    // 移除现有按钮
-    var existing = document.getElementById('quick-floor-nav-fixed');
-    if (existing) {
-        existing.remove();
-        console.log('移除现有按钮');
+    // 插件配置
+    var pluginConfig = {
+        name: 'ST-Quick-Floor-Navigation',
+        version: '1.0.0',
+        author: 'qb'
+    };
+    
+    // 等待页面加载完成
+    function waitForPageLoad() {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPlugin);
+        } else {
+            // 延迟一点时间确保SillyTavern完全初始化
+            setTimeout(initPlugin, 1000);
+        }
+    }
+    
+    // 初始化插件
+    function initPlugin() {
+        console.log('初始化楼层导航插件...');
+        
+        // 移除现有按钮
+        var existing = document.getElementById('quick-floor-nav-fixed');
+        if (existing) {
+            existing.remove();
+            console.log('移除现有按钮');
+        }
+        
+        // 创建按钮
+        createButtons();
+        
+        // 监听页面变化（SillyTavern的聊天页面切换）
+        var observer = new MutationObserver(function(mutations) {
+            var shouldRecreate = false;
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    // 检查是否有新的聊天内容
+                    for (var i = 0; i < mutation.addedNodes.length; i++) {
+                        var node = mutation.addedNodes[i];
+                        if (node.nodeType === 1 && (node.classList.contains('mes') || node.querySelector('.mes'))) {
+                            shouldRecreate = true;
+                            break;
+                        }
+                    }
+                }
+            });
+            
+            if (shouldRecreate) {
+                setTimeout(function() {
+                    var current = document.getElementById('quick-floor-nav-fixed');
+                    if (!current) {
+                        createButtons();
+                    }
+                }, 500);
+            }
+        });
+        
+        // 开始观察
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
     }
     
     // 创建按钮
     function createButtons() {
-        console.log('创建按钮...');
+        console.log('创建楼层导航按钮...');
         
         // 创建容器
         var container = document.createElement('div');
@@ -34,6 +91,7 @@
         container.style.flexDirection = 'column';
         container.style.gap = '8px';
         container.style.minWidth = '120px';
+        container.style.backdropFilter = 'blur(10px)';
         
         // 创建标题
         var title = document.createElement('div');
@@ -324,7 +382,7 @@
         // 初始更新
         setTimeout(updateFloorInfo, 500);
         
-        console.log('✅ 简化版本按钮已创建');
+        console.log('✅ 楼层导航按钮已创建');
         
         // 返回控制对象
         window.QuickFloorFixed = {
@@ -373,7 +431,7 @@
         return container;
     }
     
-    // 创建按钮
-    createButtons();
+    // 启动插件
+    waitForPageLoad();
     
 })();
