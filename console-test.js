@@ -1,344 +1,180 @@
-// 直接在控制台中运行的测试代码
-console.log('🎯 开始直接测试楼层导航功能...');
+// 控制台测试版本 - 直接在浏览器控制台中运行
+// 复制以下代码到浏览器控制台中执行
 
-// 立即创建测试按钮
-function createTestButton() {
-    console.log('🎯 创建测试按钮...');
+(function() {
+    console.log('🚀 开始创建快速定位楼层按钮...');
     
     // 移除现有按钮
-    var existing = document.getElementById('floor-nav-test');
+    const existing = document.getElementById('quick-floor-nav-test');
     if (existing) {
         existing.remove();
+        console.log('移除现有按钮');
     }
     
-    // 创建按钮
-    var button = document.createElement('div');
-    button.id = 'floor-nav-test';
-    button.style.position = 'fixed';
-    button.style.top = '50px';
-    button.style.right = '50px';
-    button.style.zIndex = '999999';
-    button.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-    button.style.color = 'white';
-    button.style.padding = '15px';
-    button.style.borderRadius = '10px';
-    button.style.cursor = 'pointer';
-    button.style.fontFamily = 'Arial, sans-serif';
-    button.style.fontSize = '14px';
-    button.style.fontWeight = 'bold';
-    button.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
-    button.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-    button.style.minWidth = '120px';
-    button.style.textAlign = 'center';
-    button.textContent = '🎯 楼层导航测试';
-    
-    button.addEventListener('click', function() {
-        alert('插件工作正常！\n\n功能包括：\n- 快速跳转到楼层\n- 上下移动\n- 楼层编号识别\n\n点击确定后开始创建完整功能...');
-        console.log('🎯 测试按钮被点击，开始创建完整功能...');
-        createFullNavigation();
-    });
-    
-    button.addEventListener('mouseenter', function() {
-        button.style.transform = 'scale(1.05)';
-        button.style.transition = 'all 0.2s ease';
-    });
-    
-    button.addEventListener('mouseleave', function() {
-        button.style.transform = 'scale(1)';
-    });
-    
-    document.body.appendChild(button);
-    console.log('🎯 测试按钮已创建');
-}
-
-// 创建完整的楼层导航功能
-function createFullNavigation() {
-    console.log('🎯 开始创建完整楼层导航...');
-    
-    // 移除测试按钮
-    var testButton = document.getElementById('floor-nav-test');
-    if (testButton) {
-        testButton.remove();
-    }
-    
-    // 移除现有面板
-    var existing = document.getElementById('floor-nav-panel');
-    if (existing) {
-        existing.remove();
-    }
-    
-    // 创建面板
-    var panel = document.createElement('div');
-    panel.id = 'floor-nav-panel';
-    panel.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 999999;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 15px;
-        border-radius: 10px;
-        font-family: Arial, sans-serif;
-        font-size: 14px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        min-width: 120px;
-        backdrop-filter: blur(10px);
+    // 创建按钮容器
+    const container = document.createElement('div');
+    container.id = 'quick-floor-nav-test';
+    container.style.cssText = `
+        position: fixed !important;
+        top: 20px !important;
+        right: 20px !important;
+        z-index: 999999 !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        padding: 15px !important;
+        border-radius: 10px !important;
+        font-family: Arial, sans-serif !important;
+        font-size: 14px !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        min-width: 120px !important;
     `;
     
     // 创建标题
-    var title = document.createElement('div');
+    const title = document.createElement('div');
     title.textContent = '🎯 楼层导航';
     title.style.cssText = `
-        text-align: center;
-        font-weight: bold;
-        margin-bottom: 5px;
-        font-size: 12px;
+        text-align: center !important;
+        font-weight: bold !important;
+        margin-bottom: 5px !important;
+        font-size: 12px !important;
     `;
-    panel.appendChild(title);
-    
-    // 获取消息元素
-    function getMessages() {
-        console.log('🎯 搜索楼层元素...');
-        var selectors = [
-            '.mes',
-            '.message',
-            '[class*="message"]',
-            '[class*="mes"]',
-            '.chat-message',
-            '.msg',
-            'div[class*="chat"] > div',
-            '#chat > div',
-            '.chat-container > div'
-        ];
-        
-        for (var s = 0; s < selectors.length; s++) {
-            var elements = document.querySelectorAll(selectors[s]);
-            console.log('🎯 选择器 ' + selectors[s] + ' 找到 ' + elements.length + ' 个元素');
-            
-            if (elements.length > 0) {
-                var validElements = [];
-                for (var i = 0; i < elements.length; i++) {
-                    var element = elements[i];
-                    var text = element.textContent || '';
-                    if (text.match(/#\d+/) && element.offsetHeight > 20) {
-                        console.log('🎯 找到楼层元素: ' + text.match(/#\d+/)[0]);
-                        validElements.push(element);
-                    }
-                }
-                if (validElements.length > 0) {
-                    console.log('🎯 使用选择器 ' + selectors[s] + ' 找到 ' + validElements.length + ' 个有效楼层元素');
-                    return validElements;
-                }
-            }
-        }
-        console.log('🎯 未找到楼层元素');
-        return [];
-    }
-    
-    // 跳转函数
-    function jumpToFloor(floorNumber) {
-        console.log('🎯 跳转到楼层: ' + floorNumber);
-        var messages = getMessages();
-        if (floorNumber >= 0 && floorNumber < messages.length) {
-            messages[floorNumber].scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start'
-            });
-            console.log('🎯 成功跳转到楼层 ' + floorNumber);
-            return true;
-        } else {
-            console.log('🎯 楼层号超出范围: ' + floorNumber + ' (总数: ' + messages.length + ')');
-            return false;
-        }
-    }
+    container.appendChild(title);
     
     // 创建按钮
-    var buttons = [
-        { 
-            text: '⬆️ 顶部', 
-            action: function() { 
-                console.log('🎯 点击顶部按钮');
-                jumpToFloor(0); 
-            } 
-        },
-        { 
-            text: '⬆ 上移', 
-            action: function() { 
-                console.log('🎯 点击上移按钮');
-                var messages = getMessages();
-                var currentFloor = 0;
-                for (var i = 0; i < messages.length; i++) {
-                    var rect = messages[i].getBoundingClientRect();
-                    if (rect.top >= 0 && rect.top <= window.innerHeight / 2) {
-                        currentFloor = i;
-                        break;
-                    }
-                }
-                if (currentFloor > 0) {
-                    jumpToFloor(currentFloor - 1);
-                } else {
-                    console.log('🎯 已经在第一层');
-                }
-            } 
-        },
-        { 
-            text: '⬇ 下移', 
-            action: function() { 
-                console.log('🎯 点击下移按钮');
-                var messages = getMessages();
-                var currentFloor = 0;
-                for (var i = 0; i < messages.length; i++) {
-                    var rect = messages[i].getBoundingClientRect();
-                    if (rect.top >= 0 && rect.top <= window.innerHeight / 2) {
-                        currentFloor = i;
-                        break;
-                    }
-                }
-                if (currentFloor < messages.length - 1) {
-                    jumpToFloor(currentFloor + 1);
-                } else {
-                    console.log('🎯 已经在最后一层');
-                }
-            } 
-        },
-        { 
-            text: '⬇️ 底部', 
-            action: function() { 
-                console.log('🎯 点击底部按钮');
-                var messages = getMessages();
+    const buttons = [
+        { text: '⬆️ 顶部', action: () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            console.log('跳转到顶部');
+        }},
+        { text: '⬆ 上移', action: () => {
+            window.scrollBy({ top: -200, behavior: 'smooth' });
+            console.log('向上滚动');
+        }},
+        { text: '⬇ 下移', action: () => {
+            window.scrollBy({ top: 200, behavior: 'smooth' });
+            console.log('向下滚动');
+        }},
+        { text: '⬇️ 底部', action: () => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            console.log('跳转到底部');
+        }},
+        { text: '🎯 跳转', action: () => {
+            const floor = prompt('请输入楼层号:');
+            if (floor && !isNaN(floor)) {
+                const messages = document.querySelectorAll('.mes, .message, [class*="message"]');
                 if (messages.length > 0) {
-                    jumpToFloor(messages.length - 1);
+                    const targetIndex = Math.min(parseInt(floor) - 1, messages.length - 1);
+                    messages[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    console.log(`跳转到第${floor}层`);
+                } else {
+                    alert('未找到消息元素');
                 }
-            } 
-        },
-        { 
-            text: '🎯 跳转', 
-            action: function() { 
-                console.log('🎯 点击跳转按钮');
-                var messages = getMessages();
-                if (messages.length === 0) {
-                    alert('未找到消息元素，无法跳转');
-                    return;
-                }
-                var floorNumber = prompt('请输入要跳转的楼层 (0-' + (messages.length - 1) + '):');
-                if (floorNumber !== null) {
-                    var targetFloor = parseInt(floorNumber);
-                    if (!isNaN(targetFloor) && targetFloor >= 0 && targetFloor < messages.length) {
-                        jumpToFloor(targetFloor);
-                    } else {
-                        alert('无效的楼层号，请输入 0-' + (messages.length - 1) + ' 之间的数字');
-                    }
-                }
-            } 
-        }
+            }
+        }}
     ];
     
-    // 添加按钮
-    for (var b = 0; b < buttons.length; b++) {
-        var button = document.createElement('button');
-        button.textContent = buttons[b].text;
+    buttons.forEach(btn => {
+        const button = document.createElement('button');
+        button.textContent = btn.text;
         button.style.cssText = `
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            min-width: 80px;
+            background: rgba(255, 255, 255, 0.2) !important;
+            border: none !important;
+            color: white !important;
+            padding: 8px 12px !important;
+            border-radius: 6px !important;
+            cursor: pointer !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
+            min-width: 80px !important;
         `;
-        button.addEventListener('click', buttons[b].action);
-        panel.appendChild(button);
-    }
+        
+        // 添加悬停效果
+        button.addEventListener('mouseenter', () => {
+            button.style.background = 'rgba(255, 255, 255, 0.3)';
+            button.style.transform = 'translateY(-2px)';
+        });
+        
+        button.addEventListener('mouseleave', () => {
+            button.style.background = 'rgba(255, 255, 255, 0.2)';
+            button.style.transform = 'translateY(0)';
+        });
+        
+        button.onclick = btn.action;
+        container.appendChild(button);
+    });
     
-    // 楼层信息显示
-    var floorInfo = document.createElement('div');
-    floorInfo.id = 'floor-info';
+    // 添加楼层信息显示
+    const floorInfo = document.createElement('div');
+    floorInfo.id = 'floor-info-test';
     floorInfo.style.cssText = `
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        padding: 6px 8px;
-        border-radius: 4px;
-        font-size: 11px;
-        text-align: center;
-        margin-top: 5px;
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        padding: 6px 8px !important;
+        border-radius: 4px !important;
+        font-size: 11px !important;
+        text-align: center !important;
+        margin-top: 5px !important;
     `;
     floorInfo.textContent = '楼层: 0/0';
-    panel.appendChild(floorInfo);
+    container.appendChild(floorInfo);
+    
+    // 添加到页面
+    document.body.appendChild(container);
     
     // 更新楼层信息
     function updateFloorInfo() {
-        var messages = getMessages();
-        var totalFloors = messages.length;
-        var currentFloor = 0;
+        const messages = document.querySelectorAll('.mes, .message, [class*="message"]');
+        const totalFloors = messages.length;
         
-        for (var i = 0; i < messages.length; i++) {
-            var rect = messages[i].getBoundingClientRect();
-            if (rect.top >= 0 && rect.top <= window.innerHeight / 2) {
-                currentFloor = i;
-                break;
-            }
+        // 计算当前楼层
+        let currentFloor = 0;
+        if (messages.length > 0) {
+            const containerRect = document.body.getBoundingClientRect();
+            const containerCenter = containerRect.top + containerRect.height / 2;
+            
+            let closestDistance = Infinity;
+            messages.forEach((message, index) => {
+                const messageRect = message.getBoundingClientRect();
+                const messageCenter = messageRect.top + messageRect.height / 2;
+                const distance = Math.abs(messageCenter - containerCenter);
+                
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    currentFloor = index + 1;
+                }
+            });
         }
         
-        floorInfo.textContent = '楼层: ' + currentFloor + '/' + totalFloors;
+        floorInfo.textContent = `楼层: ${currentFloor}/${totalFloors}`;
     }
     
-    // 监听滚动
-    var scrollTimeout;
-    window.addEventListener('scroll', function() {
+    // 监听滚动事件
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
         clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(updateFloorInfo, 100);
     });
     
-    // 添加到页面
-    document.body.appendChild(panel);
-    
     // 初始更新
     setTimeout(updateFloorInfo, 500);
     
-    console.log('🎯 楼层导航面板已创建');
+    console.log('✅ 快速定位楼层按钮已创建！');
+    console.log('按钮位置:', container.getBoundingClientRect());
     
     // 返回控制对象
-    window.QuickFloorFixed = {
-        panel: panel,
+    window.QuickFloorTest = {
+        container: container,
         updateInfo: updateFloorInfo,
-        remove: function() { panel.remove(); },
-        test: function() {
-            console.log('🧪 开始测试按钮功能...');
-            console.log('1. 跳转到顶部...');
-            jumpToFloor(0);
-            setTimeout(function() {
-                console.log('2. 跳转到底部...');
-                var messages = getMessages();
-                if (messages.length > 0) jumpToFloor(messages.length - 1);
-            }, 1000);
-        },
-        getMessages: getMessages,
-        jumpToFloor: jumpToFloor,
-        debug: function() {
-            console.log('🔍 调试信息:');
-            var messages = getMessages();
-            console.log('找到 ' + messages.length + ' 个楼层元素');
-            for (var i = 0; i < messages.length; i++) {
-                var text = messages[i].textContent || '';
-                var match = text.match(/#\d+/);
-                var floorText = match ? match[0] : '无编号';
-                console.log('楼层 ' + i + ': ' + floorText);
-            }
-        }
+        remove: () => container.remove()
     };
     
-    return panel;
-}
+})();
 
-// 立即创建测试按钮
-createTestButton();
 
-console.log('🎯 测试代码加载完成，请查看右上角是否有测试按钮');
+
